@@ -25,7 +25,7 @@ sub new
 sub get_char
 {
     my ($self, $iv, $block, $padding, $index, $done) = @_;
-    my $queue = Thread::Queue->new(1 .. 255);
+    my $queue = Thread::Queue->new(0 .. 255);
     $queue->end();
     my $found :shared;
     $found = undef;
@@ -74,11 +74,11 @@ sub decrypt
     my ($self, $ciphertext) = @_;
     my @blocks = map {
         substr($ciphertext, $_ * $self->{blocksize}, $self->{blocksize})
-    } 0 .. length($ciphertext) / $self->{blocksize};
+    } 0 .. (length($ciphertext) / $self->{blocksize} - 1);
     my @plaintext = map {
         my $dec = $self->get_block(\@blocks, $_, 1);
         $dec
-    } 1 .. @blocks - 1;
+    } 1 .. $#blocks;
     join '', @plaintext
 }
 

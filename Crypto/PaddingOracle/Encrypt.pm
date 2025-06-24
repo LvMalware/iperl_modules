@@ -49,9 +49,9 @@ sub encrypt
     my $padding   = $blocksize - length($plaintext) % $blocksize;
     $plaintext   .= chr($padding) x $padding if $padding;
     my @blocks;
+    unshift @blocks, $self->__rand_bytes($blocksize);
     for (my $i = length($plaintext) / $blocksize - 1; $i > -1; $i --)
     {
-        unshift @blocks, $self->__rand_bytes($blocksize);
         my $data = substr($plaintext, $i * $blocksize, $blocksize);
         $self->set_block(\@blocks, 0, $data);
     }
